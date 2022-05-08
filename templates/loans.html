@@ -1,0 +1,70 @@
+{%extends "layout.html" %}
+{%block loans%}
+<h1>Loans </h1>
+<a class=" btn btn-primary" aria-current="page" href="/loans">show all</a>
+<a class=" btn btn-primary" aria-current="page" href="/loans/late">show late loans</a>
+<div class="row row-cols-6 row-cols-md-3 g-4">
+
+
+
+    {% for loan in loans %}
+    <!-- {{loop.index}} -->
+    <div class="col">
+        <div class="card">
+
+            <div class="card-body">
+                <h5 class="card-title">Book: {% for book in books %}{%if loan.book_id ==
+                    book.id%}{{book.book_name}}{%endif%}{%endfor%}</h5>
+                <h5 class="card-title">Customer: {% for cust in customers %}{%if loan.cust_id ==
+                    cust.id%}{{cust.cust_name}}{%endif%}{%endfor%}</h5>
+                <h6 class="card-text">date: {{loan.loan_date}}</h6>
+                <h6 class="card-text">return: {{loan.loan_ret_date}}</h6>
+                {%if loan.loan_ret_date == none%}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#returnModal{{loan.id}}">
+                    Return
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="returnModal{{loan.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">which customer</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/loans/return/{{loan.id}}" method="POST">
+                                    <div class="mb-3">
+                                        <label for="loan_ret_date_str" class="form-label">date</label>
+                                        <input class="form-control" name="loan_ret_date_str" id="loan_ret_date_str">
+                                        <div id="dateformathelp" class="form-text">format: yyyy-mm-dd</div>
+
+                                    </div>
+
+
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {%endif%}
+                <p class="card-text">
+
+                    {%if loan.on_time %}
+                    <small class="text-primary" >Returned on time</small>
+                    {%else%}
+                    <small class="text-danger">Returned Late or not at all</small>
+                    {%endif%}
+
+                </p>
+                <p class="card-text"><small class="text-muted">id: {{loan.id}}</small></p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{%endblock%}

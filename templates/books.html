@@ -1,0 +1,124 @@
+{%extends "layout.html" %}
+{%block books%}
+<h1> Books</h1>
+
+<form action="/books/search" method="POST">
+    <input type="text" name="book_name" id="book_name" placeholder="Book name..." name="search">
+    <button type="submit">Search</button>
+</form>
+
+<a class=" btn btn-primary" aria-current="page" href="/books">show all</a>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Add Book
+</button>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/books/newitem" method="POST">
+                    <div class="mb-3">
+                        <label for="book_name" class="form-label">Name*</label>
+                        <input class="form-control" name="book_name" id="book_name">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="author_name" class="form-label">Author name</label>
+                        <input class="form-control" name="author_name" id="author_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="year_pub" class="form-label">Year published</label>
+                        <input class="form-control" name="year_pub" id="year_pub">
+                    </div>
+                    <div class="mb-3">
+                        <label for="book_type" class="form-label">Book type*</label>
+                        <input class="form-control" name="book_type" id="book_type">
+                        <div id="typeExplanation" class="form-text">type 1: 10 days</div>
+                        <div id="typeExplanation" class="form-text">type 2: 5 days</div>
+                        <div id="typeExplanation" class="form-text">type 3: 2 days</div>
+                    </div>
+                    <br>
+                    <div id="mandatory" class="form-text">areas marked with * are mandatory</div>
+                    <br>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <!-- <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+                </div> -->
+        </div>
+    </div>
+</div>
+
+<div class="row row-cols-6 row-cols-md-3 g-4">
+    {% for book in books %}
+    <!-- {{loop.index}} -->
+    <div class="col">
+        <div class="card">
+
+            <div class="card-body">
+                <h5 class="card-title">Book Name: {{book.book_name}}</h5>
+                <h6 class="card-text">Author: {{book.author_name}}</h6>
+                <h6 class="card-text">Year: {{book.year_pub}}</h6>
+                <h6 class="card-text">Type: {{book.book_type}}</h6>
+                <h6 class="card-text">
+                    {%if book.book_type == 1 %} Max return time is 10 days{%endif%}
+                    {%if book.book_type == 2 %} Max return time is 5 days{%endif%}
+                    {%if book.book_type == 3 %} Max return time is 2 days{%endif%}
+                </h6>
+
+
+                <a class="btn btn-danger" aria-current="page" href="/books/del/{{book.id}}">Remove</a>
+                <!-- createloan -->
+                {%if book.is_available %}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#loanModal{{book.id}}">
+                    Loan
+                </button>
+                {%endif%}
+
+                <!-- Modal -->
+                <div class="modal fade" id="loanModal{{book.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">which customer</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/books/newloan/{{book.id}}" method="POST">
+                                    <div class="mb-3">
+                                        <label for="cust_name" class="form-label">Name of customer*</label>
+                                        <input class="form-control" name="cust_name" id="cust_name">
+
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="loan_date_str" class="form-label">date</label>
+                                        <input class="form-control" name="loan_date_str" id="loan_date_str">
+                                        <div id="dateformathelp" class="form-text">format: yyyy-mm-dd</div>
+                                    </div>
+                                    <div id="mandatory" class="form-text">areas marked with * are mandatory</div>
+
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- createloan end -->
+                <p class="card-text"><small class="text-muted">id: {{book.id}}</small></p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
